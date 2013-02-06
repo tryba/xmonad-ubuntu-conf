@@ -203,9 +203,9 @@ myKeyBindings =
     , ((myModMask, xK_p), spawn "dmenu_run")
     , ((myModMask, xK_u), focusUrgent)
     , ((myModMask, xK_d), togglevga)
-    , ((0, 0x1008FF12), spawn "amixer -q set Master toggle")
-    , ((0, 0x1008FF11), spawn "amixer -q set Master 10%-")
-    , ((0, 0x1008FF13), spawn "amixer -q set Master 10%+")
+    , ((myModMask, xK_F8), spawn "amixer -q set Master toggle")
+    , ((myModMask, xK_F6), spawn "amixer -q set Master 10%-")
+    , ((myModMask, xK_F7), spawn "amixer -q set Master 10%+")
   ]
 
 
