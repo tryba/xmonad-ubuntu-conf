@@ -24,6 +24,7 @@ import XMonad.Layout.NoBorders
 import XMonad.Layout.Circle
 import XMonad.Layout.PerWorkspace (onWorkspace)
 import XMonad.Layout.Fullscreen
+import qualified XMonad.Layout.IndependentScreens as LIS
 import XMonad.Util.EZConfig
 import XMonad.Util.Run
 import XMonad.Hooks.DynamicLog
@@ -33,6 +34,7 @@ import XMonad.Hooks.UrgencyHook
 import qualified XMonad.StackSet as W
 import qualified Data.Map as M
 import Data.Ratio ((%))
+import qualified XMonad.Layout.IndependentScreens as LIS
 
 {-
   Xmonad configuration variables. These settings control some of the
@@ -43,7 +45,7 @@ myModMask            = mod4Mask       -- changes the mod key to "super"
 myFocusedBorderColor = "#ff0000"      -- color of focused border
 myNormalBorderColor  = "#cccccc"      -- color of inactive border
 myBorderWidth        = 1              -- width of border around windows
-myTerminal           = "terminator"   -- which terminal software to use
+myTerminal           = "gnome-terminal"   -- which terminal software to use
 myIMRosterTitle      = "Contact List" -- title of roster on IM workspace
 
 
@@ -63,7 +65,6 @@ myVisibleWSLeft  = "("        -- wrap inactive workspace with these
 myVisibleWSRight = ")"
 myUrgentWSLeft  = "{"         -- wrap urgent workspace with these
 myUrgentWSRight = "}"
-
 
 {-
   Workspace configuration. Here you can change the names of your
@@ -86,13 +87,13 @@ myUrgentWSRight = "}"
 
 myWorkspaces =
   [
-    "7:Chat",  "8:Dbg", "9:Pix",
-    "4:Docs",  "5:Dev", "6:Web",
+    "7:Chat",  "8:Dbg", "9:Remote",
+    "4:Java",  "5:Ruby", "6:Web",
     "1:Term",  "2:Hub", "3:Mail",
     "0:VM",    "Extr1", "Extr2"
   ]
 
-startupWorkspace = "5:Dev"  -- which workspace do you want to be on after launch?
+startupWorkspace = "5:Ruby"  -- which workspace do you want to be on after launch?
 
 {-
   Layout configuration. In this section we identify which xmonad
@@ -157,19 +158,10 @@ defaultLayouts = smartBorders(avoidStruts(
 -- will want to modify that variable.
 chatLayout = avoidStruts(withIM (1%7) (Title myIMRosterTitle) Grid)
 
--- The GIMP layout uses the ThreeColMid layout. The traditional GIMP
--- floating panels approach is a bit of a challenge to handle with xmonad;
--- I find the best solution is to make the image you are working on the
--- master area, and then use this ThreeColMid layout to make the panels
--- tile to the left and right of the image. If you use GIMP 2.8, you
--- can use single-window mode and avoid this issue.
-gimpLayout = smartBorders(avoidStruts(ThreeColMid 1 (3/100) (3/4)))
-
 -- Here we combine our default layouts with our specific, workspace-locked
 -- layouts.
 myLayouts =
   onWorkspace "7:Chat" chatLayout
-  $ onWorkspace "9:Pix" gimpLayout
   $ defaultLayouts
 
 
@@ -197,13 +189,20 @@ myLayouts =
   the output.
 -}
 
+togglevga = do
+  screencount <- LIS.countScreens
+  if screencount > 1
+    then spawn "xrandr --output VGA1 --off"
+    else spawn "xrandr --output VGA1 --mode 1920x1080 --right-of LVDS1"
+
 myKeyBindings =
   [
     ((myModMask, xK_b), sendMessage ToggleStruts)
     , ((myModMask, xK_a), sendMessage MirrorShrink)
     , ((myModMask, xK_z), sendMessage MirrorExpand)
-    , ((myModMask, xK_p), spawn "synapse")
+    , ((myModMask, xK_p), spawn "dmenu_run")
     , ((myModMask, xK_u), focusUrgent)
+    , ((myModMask, xK_d), togglevga)
     , ((0, 0x1008FF12), spawn "amixer -q set Master toggle")
     , ((0, 0x1008FF11), spawn "amixer -q set Master 10%-")
     , ((0, 0x1008FF13), spawn "amixer -q set Master 10%+")
@@ -258,13 +257,14 @@ myManagementHooks = [
   resource =? "synapse" --> doIgnore
   , resource =? "stalonetray" --> doIgnore
   , className =? "rdesktop" --> doFloat
-  , (className =? "Komodo IDE") --> doF (W.shift "5:Dev")
-  , (className =? "Komodo IDE" <&&> resource =? "Komodo_find2") --> doFloat
-  , (className =? "Komodo IDE" <&&> resource =? "Komodo_gotofile") --> doFloat
-  , (className =? "Komodo IDE" <&&> resource =? "Toplevel") --> doFloat
+  , (className =? "komodo") --> doF (W.shift "5:Ruby")
+  , (className =? "komodo" <&&> resource =? "Komodo_find2") --> doFloat
+  , (className =? "komodo" <&&> resource =? "Komodo_gotofile") --> doFloat
+  , (className =? "komodo" <&&> resource =? "Toplevel") --> doFloat
+  , (className =? "eclipse") --> doF (W.shift "4:Java")
+  , (className =? "google-chrome") --> doF (W.shift "6:Web")
   , (className =? "Empathy") --> doF (W.shift "7:Chat")
   , (className =? "Pidgin") --> doF (W.shift "7:Chat")
-  , (className =? "Gimp-2.8") --> doF (W.shift "9:Pix")
   ]
 
 
@@ -349,7 +349,8 @@ main = do
       <+> composeAll myManagementHooks
       <+> manageDocks
   , logHook = dynamicLogWithPP $ xmobarPP {
-      ppOutput = hPutStrLn xmproc
+      ppOutput = hPutStrLn xmproc 
+      , ppLayout = (\x -> "")
       , ppTitle = xmobarColor myTitleColor "" . shorten myTitleLength
       , ppCurrent = xmobarColor myCurrentWSColor ""
         . wrap myCurrentWSLeft myCurrentWSRight
