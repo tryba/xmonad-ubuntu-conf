@@ -140,11 +140,7 @@ defaultLayouts = smartBorders(avoidStruts(
   -- the available space. Remaining windows tile to both the left and
   -- right of the master window. You can resize using "super-h" and
   -- "super-l".
-  ||| ThreeColMid 1 (3/100) (3/4)
-
-  -- Circle layout places the master window in the center of the screen.
-  -- Remaining windows appear in a circle around it
-  ||| Circle))
+  ||| ThreeColMid 1 (3/100) (1/3)))
 
 
 -- Here we define some layouts which will be assigned to specific
@@ -162,6 +158,7 @@ chatLayout = avoidStruts(withIM (1%7) (Title myIMRosterTitle) Grid)
 -- layouts.
 myLayouts =
   onWorkspace "7:Chat" chatLayout
+-- $ onWorkspace "1:Term" Grid
   $ defaultLayouts
 
 
@@ -203,7 +200,7 @@ myKeyBindings =
     , ((myModMask, xK_p), spawn "dmenu_run")
     , ((myModMask, xK_u), focusUrgent)
     , ((myModMask, xK_d), togglevga)
-    , ((myModMask, xK_F8), spawn "amixer -q set Master toggle")
+    , ((myModMask, xK_F8), spawn "amixer -q sset Master toggle; amixer -q set Headphone toggle; amixer -q set PCM toggle; amixer -q set Front toggle")
     , ((myModMask, xK_F6), spawn "amixer -q set Master 10%-")
     , ((myModMask, xK_F7), spawn "amixer -q set Master 10%+")
   ]
