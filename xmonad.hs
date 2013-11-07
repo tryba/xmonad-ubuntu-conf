@@ -200,7 +200,7 @@ myKeyBindings =
     , ((myModMask, xK_p), spawn "dmenu_run")
     , ((myModMask, xK_u), focusUrgent)
     , ((myModMask, xK_d), togglevga)
-    , ((myModMask, xK_F8), spawn "amixer -q sset Master toggle; amixer -q set Headphone toggle; amixer -q set PCM toggle; amixer -q set Front toggle")
+    , ((myModMask, xK_F8), spawn "amixer -q set Master toggle; amixer -q set Headphone toggle; amixer -q set PCM toggle; amixer -q set Front toggle; amixer -q set Speaker toggle")
     , ((myModMask, xK_F6), spawn "amixer -q set Master 10%-")
     , ((myModMask, xK_F7), spawn "amixer -q set Master 10%+")
   ]
@@ -254,7 +254,7 @@ myManagementHooks = [
   resource =? "synapse" --> doIgnore
   , resource =? "stalonetray" --> doIgnore
   , className =? "rdesktop" --> doFloat
-  , (className =? "komodo") --> doF (W.shift "5:Ruby")
+  , (className =? "sublime_text") --> doF (W.shift "5:Ruby")
   , (className =? "komodo" <&&> resource =? "Komodo_find2") --> doFloat
   , (className =? "komodo" <&&> resource =? "Komodo_gotofile") --> doFloat
   , (className =? "komodo" <&&> resource =? "Toplevel") --> doFloat

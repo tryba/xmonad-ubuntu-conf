@@ -37,11 +37,19 @@ xcompmgr -n &
 # connected screens and find out what names you should use to refer to them.
 
 # Activate primary screen 
-xrandr --output LVDS1 --auto --pos 0x180 --primary
+xrandr --newmode "1440x900_60.00"  106.50  1440 1528 1672 1904  900 903 909 934 -hsync +vsync
+xrandr --addmode LVDS1 1440x900_60.00
+xrandr --output LVDS1 --auto --pos 0x180 --mode 1440x900_60.00 --primary
 
 # If we find that a screen is connected via VGA, activate it and position it
 # to the left of the primary screen.
-xrandr | grep 'VGA1 connected' | ifne xrandr --output VGA1 --mode 1920x1080 --right-of LVDS1
+DEV=`xrandr | grep -E 'VGA. connected' | sed 's/\(.*\) connected.*/\1/'`
+MON2=`xrandr | grep -A1 "$DEV connected" | grep '   [0-9]' | sed 's/   \([^ ]\+\).*/\1/'`
+if [ ! -z "$MON2" ]; then
+  xrandr --output $DEV --mode $MON2 --right-of LVDS1
+fi
+
+#xrandr | grep 'VGA1 connected' | ifne xrandr --output VGA1 --mode 1920x1080 --right-of LVDS1
 
 # If we find that a screen is connected via DVI, activate it and position it
 # to the left of the primary screen.
@@ -98,7 +106,7 @@ stalonetray \
 # certificates and the like.
 gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh
 
-komodo&
+sublime_text&
 eclipse&
 google-chrome&
 
