@@ -87,9 +87,9 @@ myUrgentWSRight = "}"
 
 myWorkspaces =
   [
-    "7:Chat",  "8:Dbg", "9:Remote",
-    "4:Java",  "5:Ruby", "6:Web",
-    "1:Term",  "2:Hub", "3:Mail",
+    "7:Term",  "8:Dbg", "9:Remote",
+    "4:Term",  "5:Ruby", "6:Web",
+    "1:Term",  "2:Java", "3:Personal",
     "0:VM",    "Extr1", "Extr2"
   ]
 
@@ -254,12 +254,6 @@ myManagementHooks = [
   resource =? "synapse" --> doIgnore
   , resource =? "stalonetray" --> doIgnore
   , className =? "rdesktop" --> doFloat
-  , (className =? "sublime_text") --> doF (W.shift "5:Ruby")
-  , (className =? "komodo" <&&> resource =? "Komodo_find2") --> doFloat
-  , (className =? "komodo" <&&> resource =? "Komodo_gotofile") --> doFloat
-  , (className =? "komodo" <&&> resource =? "Toplevel") --> doFloat
-  , (className =? "eclipse") --> doF (W.shift "4:Java")
-  , (className =? "google-chrome") --> doF (W.shift "6:Web")
   , (className =? "Empathy") --> doF (W.shift "7:Chat")
   , (className =? "Pidgin") --> doF (W.shift "7:Chat")
   ]
@@ -326,7 +320,10 @@ myKeys = myKeyBindings ++
   and run xmonad. We also spawn an instance of xmobar and pipe
   content into it via the logHook..
 -}
-
+spawnToWorkspace :: String -> String -> X ()
+spawnToWorkspace program workspace = do
+                                      spawn program     
+                                      windows $ W.greedyView workspace
 main = do
   xmproc <- spawnPipe "xmobar ~/.xmonad/xmobarrc"
   xmonad $ withUrgencyHook NoUrgencyHook $ defaultConfig {
@@ -342,6 +339,9 @@ main = do
       setWMName "LG3D"
       windows $ W.greedyView startupWorkspace
       spawn "~/.xmonad/startup-hook"
+      spawnToWorkspace "sublime_text"  "2:Ruby"
+      spawnToWorkspace "google-chrome" "6:Web"
+      spawnToWorkspace "eclipse" "2:Java"
   , manageHook = manageHook defaultConfig
       <+> composeAll myManagementHooks
       <+> manageDocks

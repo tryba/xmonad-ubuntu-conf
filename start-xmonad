@@ -106,9 +106,9 @@ stalonetray \
 # certificates and the like.
 gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh
 
-sublime_text&
-eclipse&
-google-chrome&
+#sublime_text&
+#eclipse&
+#optirun google-chrome&
 
 # Now, finally, start xmonad
 exec xmonad
