@@ -189,8 +189,8 @@ myLayouts =
 togglevga = do
   screencount <- LIS.countScreens
   if screencount > 1
-    then spawn "xrandr --output VGA1 --off"
-    else spawn "xrandr --output VGA1 --mode 1920x1080 --right-of LVDS1"
+    then spawn "xrandr --output DP2 --off"
+    else spawn "xrandr --output DP2 --mode 1920x1080 --right-of eDP1"
 
 myKeyBindings =
   [
@@ -338,10 +338,11 @@ main = do
   , startupHook = do
       setWMName "LG3D"
       windows $ W.greedyView startupWorkspace
+      spawn "stalonetray"
       spawn "~/.xmonad/startup-hook"
       spawnToWorkspace "sublime_text"  "2:Ruby"
       spawnToWorkspace "google-chrome" "6:Web"
-      spawnToWorkspace "eclipse" "2:Java"
+      spawnToWorkspace "idea.sh" "2:Java"
   , manageHook = manageHook defaultConfig
       <+> composeAll myManagementHooks
       <+> manageDocks
